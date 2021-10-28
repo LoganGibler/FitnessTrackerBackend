@@ -24,3 +24,20 @@ async function attachActivitiesToRoutines(routines) {
       throw error;
     }
   }
+
+  async function createActivity({ name, description }) {
+    try {
+      const {
+        rows: [activity],
+      } = await client.query(
+        `
+              INSERT INTO activities(name, description)
+              VALUES($1, $2)
+              RETURNING *;
+          `,
+        [name, description]
+      );
+    } catch (error) {
+      throw error;
+    }
+  }

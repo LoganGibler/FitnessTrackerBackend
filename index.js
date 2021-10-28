@@ -15,7 +15,7 @@ server.use((req, res, next) => {
     next();
   });
 
-const { client } = require("./db");
+const client = require("./db/client");
 client.connect();
 
 server.listen(PORT, () => {
