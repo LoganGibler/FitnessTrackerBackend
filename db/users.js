@@ -1,60 +1,92 @@
-const client = require('./client');
+const client = require("./client");
 
-async function getAllUsers() {
-    try {
-      const { rows } = await client.query(
-        `SELECT id, username  
-          FROM users;
-          `
-      );
-  
-      return rows;
-    } catch (error) {
-      console.error(error);
-    }
+//NOT WORKING
+async function getUser({ username, password }) {
+  if (!username || !password) {
+    return;
   }
-  
-  async function getUserByUsername(username) {
-    try {
-      const {
-        rows: [user],
-      } = await client.query(
-        `
-          SELECT *
-          FROM users
-          WHERE username=$1;
-        `,
-        [username]
-      );
-  
-      return user;
-    } catch (error) {
-      throw error;
+
+  try {
+    const user = await getUserByUsername(username);
+    console.log("this is user", user)
+    if (user.password !== password) {
+      return;
     }
+    delete user.password;
+    return user;
+  } catch (error) {
+    throw error;
   }
-  
-  async function createUser({ username, password }) {
-    try {
-      const {
-        rows: [user],
-      } = await client.query(
-        `
+}
+
+async function getUserByUsername(username) {
+
+  try {
+    const { rows } = await client.query(
+      `
+        SELECT *
+        FROM users
+        WHERE username=$1;
+      `,
+      [username]
+    );
+    if (!rows || !rows.length) {
+      return null;
+    }
+
+    const [user] = rows;
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function createUser({ username, password }) {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
               INSERT INTO users(username, password)
               VALUES($1, $2)
               ON CONFLICT (username) DO NOTHING
               RETURNING *;
             `,
-        [username, password]
-      );
-      return user;
-    } catch (error) {
-      throw error;
-    }
+      [username, password]
+    );
+    delete user.password;
+    return user;
+  } catch (error) {
+    throw error;
   }
+}
 
-  module.exports = {
-    createUser, 
-    getAllUsers,
-    getUserByUsername,
-  };
-  
+async function getUserById(userId) {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+        SELECT *
+        FROM users
+        WHERE id=$1;
+      `,
+      [userId]
+    );
+    if (!user) {
+      return null;
+    }
+    delete user.password;
+    return user;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+module.exports = {
+  createUser,
+  getUser,
+  // getUserByUsername,
+  getUserById,
+};
