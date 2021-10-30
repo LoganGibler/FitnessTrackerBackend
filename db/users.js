@@ -8,7 +8,6 @@ async function getUser({ username, password }) {
 
   try {
     const user = await getUserByUsername(username);
-    console.log("this is user", user)
     if (user.password !== password) {
       return;
     }
@@ -20,7 +19,6 @@ async function getUser({ username, password }) {
 }
 
 async function getUserByUsername(username) {
-
   try {
     const { rows } = await client.query(
       `
