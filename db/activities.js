@@ -54,7 +54,7 @@ async function createActivity({ name, description }) {
 async function getAllActivities() {
   try {
     const {
-      rows: [activity],
+      rows: activity,
     } = await client.query(`
           SELECT *
           FROM activities;
@@ -74,16 +74,17 @@ async function getAllActivities() {
 }
 
 async function updateActivity() {
+
   try {
-    const something = await getAllActivities();
+    // const  something = await getAllActivities();
     const {
       rows: [activity],
     } = await client.query(`
     UPDATE activities
     SET ${setString}
-    WHERE id=${postId}
+    WHERE id=${id}
     RETURNING *;
-    `);
+  `);
   } catch (error) {
     console.log(error);
   }

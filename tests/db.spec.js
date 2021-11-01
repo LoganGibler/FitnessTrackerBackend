@@ -297,7 +297,7 @@ describe('Database', () => {
       })
     })
   })
-  describe('Routine Activities', () => {
+  xdescribe('Routine Activities', () => {
     const routineActivityData = {
       routineId: 4,
       activityId: 8,
