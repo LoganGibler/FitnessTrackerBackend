@@ -72,25 +72,28 @@ async function getAllActivities() {
     console.log(error);
   }
 }
+//DOES NOT WORK////////////////////////////////////////////////////////////////////////////////////
+// async function updateActivity() {
 
-async function updateActivity() {
+//   try {
+//     // const  something = await getAllActivities();
+//     const {
+//       rows: [activity],
+//     } = await client.query(`
+//     UPDATE activities
+//     SET ${setString}
+//     WHERE id=${id}
+//     RETURNING *;
+//   `);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
 
-  try {
-    // const  something = await getAllActivities();
-    const {
-      rows: [activity],
-    } = await client.query(`
-    UPDATE activities
-    SET ${setString}
-    WHERE id=${id}
-    RETURNING *;
-  `);
-  } catch (error) {
-    console.log(error);
-  }
-}
+
 
 module.exports = {
   createActivity,
   getAllActivities,
+  // updateActivity
 };

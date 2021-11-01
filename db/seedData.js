@@ -7,6 +7,7 @@ async function dropTables() {
   console.log("Dropping All Tables...");
   // drop all tables, in the correct order
   await client.query(`
+  DROP TABLE IF EXISTS routines;
   DROP TABLE IF EXISTS activities;
   DROP TABLE IF EXISTS users;
   `);
@@ -30,6 +31,16 @@ async function createTables() {
     description varchar(255) NOT NULL
   );
   `);
+    console.log("finished everything but building routines")
+  await client.query(`
+  CREATE TABLE routines(
+    id SERIAL PRIMARY KEY,
+    creatorId INTEGER NOT NULL,
+    isPublic BOOLEAN DEFAULT false,
+    name varchar(255) UNIQUE NOT NULL,
+    goal TEXT NOT NULL
+  );
+  `)
   console.log("finished creating tables")
  } catch (error) {
    throw error
