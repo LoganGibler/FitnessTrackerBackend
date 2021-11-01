@@ -19,6 +19,21 @@ async function getActivityById(activityId){
     }
 }
 
+async function getAllRoutines(){
+    try {
+        const {rows : [routine]} = await client.query(`
+            SELECT *
+            FROM routines
+            RETURNING *
+        `);
+        
+        return routine
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 module.exports = {
     getActivityById,
+    getAllRoutines
   };
