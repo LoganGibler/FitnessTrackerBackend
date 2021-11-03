@@ -1,5 +1,6 @@
 const { promise } = require("bcrypt/promises");
 const client = require("./client");
+const {dbFields} = require("./ultilities")
 
 async function attachActivitiesToRoutines(routines) {
   // no side effects
@@ -47,44 +48,54 @@ async function createActivity({ name, description }) {
     );
     return activity;
   } catch (error) {
-    console.log(error);
+    throw error
   }
 }
 
 async function getAllActivities() {
   try {
     const {
-      rows: activity,
+      rows
     } = await client.query(`
           SELECT *
           FROM activities;
       `);
 
-    if (!activity) {
-      return [];
-    }
-    const activities = await activity.map((element) => {
-      return element;
-    });
+    // const activities = await activity.map((element) => {
+    //   return element;
+    // });
 
-    return activities;
+    return rows
   } catch (error) {
-    console.log(error);
+    throw error
   }
 }
 //DOES NOT WORK////////////////////////////////////////////////////////////////////////////////////
-// async function updateActivity() {
+// async function updateActivity({id, ...fields}) {
 
 //   try {
-//     // const  something = await getAllActivities();
-//     const {
-//       rows: [activity],
-//     } = await client.query(`
-//     UPDATE activities
-//     SET ${setString}
-//     WHERE id=${id}
-//     RETURNING *;
-//   `);
+//     const fieldsToUpdate = {}
+//     for(let col in fields){
+//       console.log("column", col)
+//       if (fields[col] !== undefined){
+//         fieldsToUpdate[col] = fields[col]
+//       }
+      
+//     }
+
+//     if(dbFields(fieldsToUpdate).insert.length > 0){
+//       const {
+//         rows
+//       } = await client.query(`
+//       UPDATE activities
+//       SET ${dbFields(fieldsToUpdate).insert}
+//       WHERE id=${id}
+//       RETURNING *;
+//     `, Object.values(fieldsToUpdate));
+  
+//     }
+    
+//   return rows[0]
 //   } catch (error) {
 //     console.log(error);
 //   }
@@ -95,5 +106,6 @@ async function getAllActivities() {
 module.exports = {
   createActivity,
   getAllActivities,
-  // updateActivity
+  // updateActivity,
+  attachActivitiesToRoutines
 };
