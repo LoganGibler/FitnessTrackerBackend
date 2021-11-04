@@ -19,55 +19,40 @@ async function getActivityById(activityId){
         console.log(error)
     }
 }
-//COME BACK
-// async function getAllRoutines(){
-
-//     try {
-//         const {rows: routines} = await client.query(`
-//             SELECT routines.*, users.username AS "creatorName"
-//             FROM routines
-//             JOIN users ON routines."creatorId"=users.id;
-//         `);
-        
-//         console.log("this is all routines", routines)
-//         return attachActivitiesToRoutines(routines)
-//     } catch (error) {
-//         throw error
-//     }
-// }
 
 async function getAllRoutines(){
 
     try {
         const { rows: routines} = await client.query(`
-            SELECT *
-            FROM routines;
+            SELECT routines.*, users.username AS "creatorName"
+            FROM routines
+            JOIN users ON routines."creatorId"=users.id
         `);
         
-        console.log("this is all routines", routines)
+        // console.log("this is all routines", routines)
         return attachActivitiesToRoutines(routines)
     } catch (error) {
         throw error
     }
 }
 
-// async function destroyRoutine(routineId){
-//     try {
-//         const {rows : routine} = await client.query(`
-//             DELETE * 
-//             WHERE id=$1;
-
-//         `);
-//     } catch (error) {
-//         throw error
-//     }
-// }
+async function destroyRoutine(routineId){
+    try {
+        const { rows: routine} = await client.query(`
+            DELETE * FROM routine
+            WHERE id=$1
+        `);
+        console.log("this is deleted routine" , routine)
+    } catch (error) {
+        throw error
+    }
+}
 
 async function createRoutine({creatorId, isPublic, name, goal}){
 
     try {
         const {rows: [routine]} = await client.query(`
-            INSERT INTO routines(creatorId, isPublic, name, goal)
+            INSERT INTO routines("creatorId", "isPublic", "name", "goal")
             VALUES($1, $2, $3, $4)
             RETURNING *;
         `, [creatorId, isPublic, name, goal]);
@@ -104,5 +89,6 @@ module.exports = {
     getActivityById,
     getAllRoutines,
     createRoutine,
-    getRoutineById
+    getRoutineById,
+    destroyRoutine
   };
