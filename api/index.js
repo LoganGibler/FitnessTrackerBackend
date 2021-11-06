@@ -15,6 +15,9 @@ apiRouter.use((req, res, next) => {
 const usersRouter = require("./users");
 apiRouter.use("/users", usersRouter);
 
+const healthRouter = require("./health");
+apiRouter.use("/health", healthRouter);
+
 apiRouter.use((error, req, res, next) => {
     res.send(error);
   });
