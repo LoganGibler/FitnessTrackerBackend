@@ -3,20 +3,30 @@
 // export the api router
 const express = require("express");
 const apiRouter = express.Router();
+const client = require("../db/client")
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET="neverTell" } = process.env
 
-apiRouter.use((req, res, next) => {
-    if (req.user) {
-      console.log("User is set:", req.user);
-    }
+// apiRouter.use((req, res, next) => {
+//     if (req.user) {
+//       console.log("User is set:", req.user);
+//     }
   
-    next();
-  });
+//     next();
+//   });
+
+apiRouter.get("/health", async (req, res, next) => {
+    try {
+      res.send({
+        message: "Healthy"
+      })
+    } catch (error) {
+      next(error)
+    }
+});
 
 const usersRouter = require("./users");
 apiRouter.use("/users", usersRouter);
-
-const healthRouter = require("./health");
-apiRouter.use("/health", healthRouter);
 
 apiRouter.use((error, req, res, next) => {
     res.send(error);

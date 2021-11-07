@@ -49,11 +49,10 @@ async function createUser({ username, password }) {
               INSERT INTO users(username, password)
               VALUES($1, $2)
               ON CONFLICT (username) DO NOTHING
-              RETURNING *;
+              RETURNING id, username;
             `,
       [username, password]
     );
-    delete user.password;
     return user;
   } catch (error) {
     throw error;
@@ -86,4 +85,5 @@ module.exports = {
   createUser,
   getUser,
   getUserById,
+  getUserByUsername
 };
