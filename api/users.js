@@ -6,30 +6,25 @@ const {
   getUser,
   getUserByUsername
 } = require("../db");
-const { JWT_SECRET="Never Tell" } = process.env
+const { JWT_SECRET="neverTell" } = process.env
 const {
   requireUser,
 
 } = require("./utils")
 
-usersRouter.use((req, res, next) => {
-    console.log("A request is being made to /users");
+  // usersRouter.get("/", async (req, res, next) => {
+  //   const users = await getAllUsers();
   
-    next();
-  });
+  //   res.send({
+  //     users,
+  //   });
+  // });
 
-
-  usersRouter.get("/", async (req, res, next) => {
-    const users = await getAllUsers();
-  
-    res.send({
-      users,
-    });
-  });
-
-
-  usersRouter.get("/login", async (req, res, next) => {
+  usersRouter.post("/login", async (req, res, next) => {
+    
     const { username, password } = req.body;
+
+    console.log("Hello")
   
     // request must have both
     if (!username || !password) {
@@ -40,25 +35,23 @@ usersRouter.use((req, res, next) => {
     }
   
     try {
-      const user = await getUserByUsername(username);
-  
-      if (user && user.password == password) {
-        // create token & return to user
-  
+      const user = await getUser({username, password});
+      console.log(user, "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
+      if(!user) {
+        next({name: "IncorrectCredentialsError",
+            message: "Username or password is incorrect"
+        })
+      } else {
         const token = jwt.sign(
-          { id: 1, username: "albert" },
-          process.env,
+          { id: user.id, username: user.username }, JWT_SECRET, 
           {
             expiresIn: "1h",
           }
         );
-        res.send(token);
-      } else {
-        next({
-          name: "IncorrectCredentialsError",
-          message: "Username or password is incorrect",
-        });
+        console.log(token, "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
+        res.send({user, token, message: "you are logged in!"});
       }
+  
     } catch (error) {
       console.log(error);
       next(error);
@@ -66,12 +59,11 @@ usersRouter.use((req, res, next) => {
   });
 
   usersRouter.post('/register', async (req, res, next) => {
-  
+
     try {
       const { username, password } = req.body;
 
       const queriedUser = await getUserByUsername(username);
-
 
       if (queriedUser) {
         res.status(401)
@@ -116,6 +108,14 @@ usersRouter.use((req, res, next) => {
     } catch (error) {
       next (error)
     } 
+  });
+
+  usersRouter.get('/me', async (req, res, next) => {
+    try {
+      
+    } catch (error) {
+      
+    }
   });
 
   module.exports = usersRouter;
