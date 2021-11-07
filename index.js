@@ -3,12 +3,12 @@ require("dotenv").config();
 const { PORT = 3000} = process.env
 const express = require("express");
 const server = express();
+const cors = require("cors")
+server.use(cors());
+const morgan = require("morgan");
+server.use(morgan("dev"));
 server.use(express.json());
-// const morgan = require("morgan");
-// server.use(morgan("dev"));
-// const cors = require("cors")
-// server.use(cors());
-server.use(express())
+// server.use(express())
 const axios = require("axios");
 axios.defaults.adapter = require('axios/lib/adapters/http')
 const apiRouter = require("./api");

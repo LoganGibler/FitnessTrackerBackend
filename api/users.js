@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken");
 const {
   createUser,
   getUser,
-  getUserByUsername
+  getUserByUsername,
+  getUserById
 } = require("../db");
 const { JWT_SECRET="neverTell" } = process.env
 const {
@@ -110,12 +111,21 @@ const {
     } 
   });
 
-  usersRouter.get('/me', async (req, res, next) => {
+  usersRouter.get("/me", async (req, res, next) => {
+    
     try {
-      
+  
+      const user = await getUserById();
+  
+      if(!token){
+        return null
+      } else {
+        res.send(user);
+      }
+
     } catch (error) {
-      
+      next(error);
     }
-  });
+  })
 
   module.exports = usersRouter;

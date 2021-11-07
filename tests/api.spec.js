@@ -87,7 +87,7 @@ describe('API', () => {
         expect(parsedToken.username).toEqual(registeredUser.username);
       });
     })
-    describe('GET /users/me', () => {
+    xdescribe('GET /users/me', () => {
       it('sends back users data if valid token is supplied in header', async () => {
         const {data} = await axios.get(`${API_URL}/api/users/me`, {
           headers: {'Authorization': `Bearer ${token}`}
@@ -106,7 +106,7 @@ describe('API', () => {
         expect(noTokenErrResp.data).toBeTruthy();
       });
     });
-    describe('GET /users/:username/routines', () => {
+    xdescribe('GET /users/:username/routines', () => {
       it('Gets a list of public routines for a particular user.', async () => {
         const userId = 2;
         const userWithRoutines = await getUserById(userId);
@@ -117,7 +117,7 @@ describe('API', () => {
       });
     });
   });
-  xdescribe('Activities', () => {
+  describe('Activities', () => {
     let activityToCreateAndUpdate = { name: 'Bicep Curls', description: 'They hurt, but you will thank you later' };
     describe('GET /activities', () => {
       it('Just returns a list of all activities in the database', async () => {
@@ -133,7 +133,7 @@ describe('API', () => {
         expect(filteredActivity.description).toEqual(curls.description);
       });
     });
-    xdescribe('POST /activities (*)', () => {
+    describe('POST /activities (*)', () => {
       it('Creates a new activity', async () => {
         const {data: respondedActivity} = await axios.post(`${API_URL}/api/activities`, activityToCreateAndUpdate, { headers: {'Authorization': `Bearer ${token}`} });
         expect(respondedActivity.name).toEqual(activityToCreateAndUpdate.name);
@@ -141,7 +141,7 @@ describe('API', () => {
         activityToCreateAndUpdate = respondedActivity;
       });
     });
-    xdescribe('PATCH /activities/:activityId (*)', () => {
+    describe('PATCH /activities/:activityId (*)', () => {
       it('Anyone can update an activity (yes, this could lead to long term problems a la wikipedia)', async () => {
         const newActivityData = { name: 'Double Bicep Curls', description: 'They hurt EVEN MORE, but you will thank you later' }
         const {data: respondedActivity} = await axios.patch(`${API_URL}/api/activities/${activityToCreateAndUpdate.id}`, newActivityData, { headers: {'Authorization': `Bearer ${token}`} });
@@ -149,7 +149,7 @@ describe('API', () => {
         expect(respondedActivity.description).toEqual(newActivityData.description);
       });
     });
-    xdescribe('GET /activities/:activityId/routines', () => {
+    describe('GET /activities/:activityId/routines', () => {
       it('Get a list of all public routines which feature that activity', async () => {
         const [testRoutine] = await getAllPublicRoutines();
         const [testActivity] = testRoutine.activities;
