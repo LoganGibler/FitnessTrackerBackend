@@ -1,7 +1,5 @@
 /* 
-
 DO NOT CHANGE THIS FILE
-
 */
 require('dotenv').config();
 const bcrypt = require('bcrypt');
@@ -9,7 +7,7 @@ const SALT_COUNT = 10;
 
 const { rebuildDB } = require('../db/seedData');
 const { getUserById, getAllActivities, getActivityById, createActivity, updateActivity, getRoutineById, getAllRoutines, getAllPublicRoutines, getAllRoutinesByUser, getPublicRoutinesByUser, getPublicRoutinesByActivity, createRoutine, updateRoutine, destroyRoutine, createUser, getUser, getRoutineActivitiesByRoutine, addActivityToRoutine, updateRoutineActivity, destroyRoutineActivity } = require('../db');
-const client = require('../db/client');
+const { client } = require('../db/client');
 
 describe('Database', () => {
   beforeAll(async() => {
@@ -31,10 +29,10 @@ describe('Database', () => {
         expect(userToCreateAndUpdate.username).toBe(userCredentials.username);
         expect(queriedUser.username).toBe(userCredentials.username);
       });
-      it('EXTRA CREDIT: Does not store plaintext password in the database', async () => {
+      xit('EXTRA CREDIT: Does not store plaintext password in the database', async () => {
         expect(queriedUser.password).not.toBe(userCredentials.password);
       });
-      it('EXTRA CREDIT: Hashes the password (salted 10 times) before storing it to the database', async () => {
+      xit('EXTRA CREDIT: Hashes the password (salted 10 times) before storing it to the database', async () => {
         const hashedVersion = bcrypt.compareSync(userCredentials.password, queriedUser.password);
         expect(hashedVersion).toBe(true);
       });
@@ -297,7 +295,7 @@ describe('Database', () => {
       })
     })
   })
-  xdescribe('Routine Activities', () => {
+  describe('Routine Activities', () => {
     const routineActivityData = {
       routineId: 4,
       activityId: 8,

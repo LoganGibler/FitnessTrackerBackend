@@ -1,28 +1,24 @@
-// create the express server here
-const express = require("express");
-const { PORT = 3000} = process.env
-const server = express();
-const morgan = require("morgan");
-const cors = require("cors");
+const { client } = require('./db')
 require("dotenv").config();
-server.use(morgan("dev"));
-server.use(cors());
+const { PORT = 3000} = process.env
+const express = require("express");
+const server = express();
 server.use(express.json());
+// const morgan = require("morgan");
+// server.use(morgan("dev"));
+// const cors = require("cors")
+// server.use(cors());
+server.use(express())
+const axios = require("axios");
+axios.defaults.adapter = require('axios/lib/adapters/http')
+const apiRouter = require("./api");
+server.use("/api", apiRouter);
 
-server.use((req, res, next) => {
-    console.log("<____Body Logger START____>");
-    console.log(req.body);
-    console.log("<_____Body Logger END_____>");
-  
-    next();
-  });
+server.use(function (req, res, next) {
+  res.status(404).send("Oof, can't find that!")
+})
 
-const apiRouter = require('./api');
-server.use('/api', apiRouter);
-
-const client = require("./db/client");
-client.connect();
-
+client.connect()
 server.listen(PORT, () => {
     console.log("The server is up on port", PORT);
   });

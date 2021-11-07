@@ -1,4 +1,4 @@
-const client = require("./client");
+const { client }= require("./client");
 const {attachActivitiesToRoutines} = require("./activities");
 
 async function getActivityById(activityId){
@@ -38,8 +38,6 @@ async function getAllRoutines(){
 
 async function getAllRoutinesByUser(user){
     // console.log("this is user",user)
-    //we get id, user.id = 1
-    //use getAllroutines, loop through and use if statement on if user.id = user.id, add to an array, return array 
     const routines = await getAllRoutines()
     const filteredRoutine = []
     // console.log("this is routines", routines)
@@ -79,20 +77,29 @@ async function getAllPublicRoutines(){
         throw error
     }
 }
-/////COME BACK TO THIS, MUST COMPLETE ROUTINE ACTIVITIES FUNCTIONS
-async function getPublicRoutinesByActivity(activity){
-    // console.log("this is activity they give us",activity)
-    // expect(routine.isPublic).toBe(true);
-    //activity = id, name, description
-    const routines = await getAllRoutines()
-    // console.log("this is the routine's activites",routines[0].activities)
-    try {
-        
-    } catch (error) {
-        throw error
-    }
-}
 
+async function getPublicRoutinesByActivity({ id }) {
+    try {
+      const { rows: routines } = await client.query(`
+      SELECT 
+      routines.id,
+      routines."creatorId",
+      routines."isPublic",
+      routines.name,
+      routines.goal,
+      users.username AS "creatorName"
+      From routines
+      JOIN users ON users.id = routines."creatorId"
+      WHERE "isPublic" = true;
+  `)
+  
+  
+  return attachActivitiesToRoutines(routines)
+
+    } catch (error) {
+      throw error;
+    }
+  }
 async function getPublicRoutinesByUser(user){
     // console.log("this is user",user)
     const filteredRoutines = []
@@ -114,14 +121,15 @@ async function getPublicRoutinesByUser(user){
 }
 
 
-//SHOULDNT DO THE WORK
+
 async function destroyRoutine(routineId){
+   
     try {
         const { rows } = await client.query(`
             DELETE FROM routines
-            WHERE id=$1
+            WHERE id=$1;
         `, [routineId]);
-        console.log("this is deleted routine" , routine)
+
     } catch (error) {
         throw error
     }
@@ -164,6 +172,42 @@ try {
 
 }
 
+async function updateRoutine({ id, isPublic, name, goal }) {
+    try {
+      const {
+        rows: [routines],
+    } = await client.query(
+        `
+    UPDATE routines
+    SET 
+    "isPublic" = $2,
+    "name" = $3,
+    "goal" = $4
+    WHERE "id"= $1
+    RETURNING *;
+  `,[id, isPublic, name, goal]
+    );
+
+    return routines;
+      
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function getRoutinesWithoutActivities() {
+    try {
+      const { rows: routines } = await client.query(`
+      SELECT * 
+      FROM routines
+  `);
+  
+  return routines;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
 module.exports = {
     getActivityById,
     getAllRoutines,
@@ -173,5 +217,7 @@ module.exports = {
     getAllPublicRoutines,
     getAllRoutinesByUser,
     getPublicRoutinesByUser,
-    getPublicRoutinesByActivity
+    getPublicRoutinesByActivity,
+    updateRoutine,
+    getRoutinesWithoutActivities
   };

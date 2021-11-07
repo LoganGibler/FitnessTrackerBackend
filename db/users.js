@@ -1,6 +1,6 @@
-const client = require("./client");
+const {client} = require("./client");
 
-//NOT WORKING
+
 async function getUser({ username, password }) {
   if (!username || !password) {
     return;

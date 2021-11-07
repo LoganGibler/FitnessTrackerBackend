@@ -1,84 +1,71 @@
 // require in the database adapter functions as you write them (createUser, createActivity...)
 const {
-  createActivity,
-  getAllActivities,
-  updateActivity,
-  attachActivitiesToRoutines,
-  createUser,
-  getUser,
-  getUserById,
-  dbFields,
-  getActivityById,
-  getAllRoutines,
-  createRoutine,
-  getRoutineById,
-  destroyRoutine
-} = require("./index");
-const client = require("./client");
+  getUserById,getAllActivities,getActivityById,createActivity,updateActivity,getRoutineById,
+  getAllRoutines,getAllPublicRoutines,getAllRoutinesByUser,getPublicRoutinesByUser,
+  getPublicRoutinesByActivity,createRoutine,updateRoutine,destroyRoutine,createUser,getUser,
+  getRoutineActivitiesByRoutine,addActivityToRoutine,updateRoutineActivity,destroyRoutineActivity,getRoutinesWithoutActivities,
+  attachActivitiesToRoutines
+} = require("./");
+const { client } = require("./client");
 
 async function dropTables() {
-  console.log("Dropping All Tables...");
-  // drop all tables, in the correct order
-  await client.query(`
-  DROP TABLE IF EXISTS routine_activities;
-  DROP TABLE IF EXISTS routines;
-  DROP TABLE IF EXISTS activities;
-  DROP TABLE IF EXISTS users;
-  `);
-
-  console.log("finished dropping tables");
+  try {
+    console.log("Dropping All Tables...");
+    // drop all tables, in the correct order
+    await client.query(`
+        DROP TABLE IF EXISTS routine_activities;
+        DROP TABLE IF EXISTS routines;
+        DROP TABLE IF EXISTS activities;
+        DROP TABLE IF EXISTS users;
+        `);
+    console.log("Finished dropping Tables...");
+  } catch (error) {
+    console.error("Error while dropping tables!");
+  }
 }
 
 async function createTables() {
-  console.log("Starting to build tables...");
-  // create all tables, in the correct order
   try {
-    await client.query(`
-  CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    username varchar(255) UNIQUE NOT NULL,
-    password varchar(255) NOT NULL 
-  );
-  `);
+    console.log("Starting to build tables...");
+    // create all tables, in the correct order
 
-    await client.query(`
-  CREATE TABLE activities(
-    id SERIAL PRIMARY KEY,
-    name varchar(255) NOT NULL,
-    description varchar(255) NOT NULL
-  );
-`);
-
-    await client.query(`
+    await client.query(
+      `
+    CREATE TABLE users(
+      id SERIAL PRIMARY KEY,
+      username VARCHAR(255) UNIQUE NOT NULL,
+      password VARCHAR(255) NOT NULL
+    );
+    
+    CREATE TABLE activities(
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255)	UNIQUE NOT NULL,
+      description	TEXT NOT NULL
+    );
+    
     CREATE TABLE routines(
-    id SERIAL PRIMARY KEY,
-    "creatorId" INTEGER NOT NULL,
-    "isPublic" BOOLEAN DEFAULT false,
-    name varchar(255) UNIQUE NOT NULL,
-    goal TEXT NOT NULL
-  );
-`);
-    await client.query(`
-  CREATE TABLE routine_activities(
-    id SERIAL PRIMARY KEY,
-    "routineId" INTEGER REFERENCES routines(id),
-    "activityId" INTEGER REFERENCES activities(id),
-    duration INTEGER,
-    count INTEGER,
-    UNIQUE("routineId","activityId")
-  );
-  `);
-    console.log("finished creating tables");
+       id	SERIAL	PRIMARY KEY,
+      "creatorId"	INTEGER	REFERENCES users(id),
+       "isPublic"	BOOLEAN	DEFAULT false,
+       name	VARCHAR(255)	UNIQUE NOT NULL,
+       goal	TEXT	NOT NULL
+   );
+     CREATE TABLE routine_activities(
+       id	SERIAL	PRIMARY KEY,
+       "routineId"	INTEGER	REFERENCES routines(id),
+       "activityId"	INTEGER	REFERENCES activities(id),
+       duration	INTEGER,
+       count	INTEGER
+     );
+     `);
+    console.log("Finished to building tables...");
   } catch (error) {
-    throw error;
+    console.log("Error while building tables!");
   }
-  console.log("finished creating tables");
 }
 
 /* 
-
 DO NOT CHANGE ANYTHING BELOW. This is default seed data, and will help you start testing, before getting to the tests. 
-
 */
 
 async function createInitialUsers() {
@@ -256,10 +243,9 @@ async function rebuildDB() {
     await dropTables();
     await createTables();
     await createInitialUsers();
-    //COME BACK
     await createInitialActivities();
     await createInitialRoutines();
-    // await createInitialRoutineActivities();
+    await createInitialRoutineActivities();
   } catch (error) {
     console.log("Error during rebuildDB");
     throw error;
