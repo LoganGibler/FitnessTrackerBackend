@@ -37,7 +37,7 @@ const {
   
     try {
       const user = await getUser({username, password});
-      console.log(user, "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
+      console.log("this is user", user)
       if(!user) {
         next({name: "IncorrectCredentialsError",
             message: "Username or password is incorrect"
@@ -49,7 +49,7 @@ const {
             expiresIn: "1h",
           }
         );
-        console.log(token, "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
+        console.log("this is token",token)
         res.send({user, token, message: "you are logged in!"});
       }
   
@@ -60,10 +60,8 @@ const {
   });
 
   usersRouter.post('/register', async (req, res, next) => {
-
+    const { username, password } = req.body;
     try {
-      const { username, password } = req.body;
-
       const queriedUser = await getUserByUsername(username);
 
       if (queriedUser) {
