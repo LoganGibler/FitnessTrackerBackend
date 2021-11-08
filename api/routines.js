@@ -4,6 +4,7 @@ const {
   getAllPublicRoutines,
   createRoutine,
   updateRoutine,
+  destroyRoutine
 } = require("../db/routines");
 const { requireUser } = require("./utils");
 
@@ -22,12 +23,16 @@ routineRouter.get("/", async (req, res, next) => {
 
 routineRouter.post("/", requireUser, async (req, res, next) => {
   const { name, goal, isPublic } = req.body;
-  const id = req.user;
+  const id = req.user.id;
 
   try {
     
     if ((name, goal, isPublic)) {
-      const createdRoutine = await createRoutine({ id, isPublic, name, goal });
+      const createdRoutine = await createRoutine({
+          creatorId: id,
+          isPublic,
+          name,
+          goal });
       res.send(createdRoutine);
     } else {
       res.send({ message: "Missing fields" });
@@ -42,20 +47,28 @@ routineRouter.patch("/:routineId", async (req, res, next) => {
   const { name, goal, isPublic } = req.body;
 
   try {
-    if ((routineId, name, goal, isPublic)) {
-      const updatedRoutine = await updateRoutine({
+    const updatedRoutine = await updateRoutine({
         id: routineId,
         name,
         goal,
         isPublic,
       });
       res.send(updatedRoutine);
-    } else {
-      res.send({ message: "Missing fields" });
-    }
   } catch ({ name, message }) {
     next({ name, message });
   }
 });
+
+routineRouter.delete("/:routineId", requireUser, async (req, res, next) => {
+    const id = req.params.routineId
+    console.log(id, "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
+    try {
+        const deleteRoutine = await destroyRoutine(id);
+        console.log(deleteRoutine, "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
+        res.send(deleteRoutine)
+    } catch (error) {
+        next(error);
+    }
+})
 
 module.exports = routineRouter;

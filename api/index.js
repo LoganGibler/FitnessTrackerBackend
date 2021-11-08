@@ -73,6 +73,9 @@ apiRouter.use("/activities", activityRouter);
 const routineRouter = require("./routines");
 apiRouter.use("/routines", routineRouter);
 
+// const routine_activitiesRouter = require("./routine_activities");
+// apiRouter.use("/routine_activities", routine_activitiesRouter);
+
 // apiRouter.use((error, req, res, next) => {
 //   res.send(error);
 // });

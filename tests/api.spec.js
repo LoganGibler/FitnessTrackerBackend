@@ -231,7 +231,7 @@ describe('API', () => {
       });
     });
   });
-  xdescribe('routine_activities', () => {
+  describe('routine_activities', () => {
     let newRoutineActivityData = {routineId: 3, activityId: 8, count: 25, duration: 200};
     describe('PATCH /routine_activities/:routineActivityId (**)', () => {
       it('Updates the count or duration on the routine activity', async () => {
@@ -251,7 +251,7 @@ describe('API', () => {
         expect(errRespondedRoutineActivity.data).toBeTruthy();
       });
     });
-    xdescribe('DELETE /routine_activities/:routineActivityId (**)', () => {
+    describe('DELETE /routine_activities/:routineActivityId (**)', () => {
       it('Removes an activity from a routine, uses hard delete', async () => {
         const {data: deletedRoutineActivity} = await axios.delete(`${API_URL}/api/routine_activities/${routineActivityToCreateAndUpdate.id}`, { headers: {'Authorization': `Bearer ${token}`} });
         const shouldBeDeleted = await getRoutineActivityById(deletedRoutineActivity.id);

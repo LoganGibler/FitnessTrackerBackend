@@ -1,5 +1,7 @@
 const { client }= require("./client");
 const {attachActivitiesToRoutines} = require("./activities");
+const {destroyRoutineActivity} = require("./routine_activities");
+const {getUserByUsername} = require("./users");
 
 async function getActivityById(activityId){
     try {
@@ -100,40 +102,46 @@ async function getPublicRoutinesByActivity({ id }) {
       throw error;
     }
   }
-async function getPublicRoutinesByUser(user){
-    // console.log("this is user",user)
-    const filteredRoutines = []
-    const routines = await getAllRoutines()
-    // expect(routine.creatorId).toBe(user.id);
-    // expect(routine.isPublic).toBe(true);
+
+  async function getPublicRoutinesByUser({ username }) {
     try {
-        routines.map((routine)=>{
-            if(routine.creatorId === user.id && routine.isPublic === true){
-                filteredRoutines.push(routine)
-            }
-        })
-        // console.log("this is filteredRoutines",filteredRoutines)
-        return filteredRoutines
-        
+      const user = await getUserByUsername(username);
+      const { rows: routines } = await client.query(
+        `
+        SELECT routines.*, users.username AS "creatorName" FROM routines 
+        JOIN users ON routines."creatorId"=users.id
+        WHERE "creatorId"=$1
+        AND "isPublic"='true'
+      `,
+        [user.id]
+      );
+      return attachActivitiesToRoutines(routines);
     } catch (error) {
-        throw error
+      throw error;
     }
-}
+  }
 
 
 
-async function destroyRoutine(routineId){
-   
+  async function destroyRoutine(id) {
     try {
-        const { rows } = await client.query(`
-            DELETE FROM routines
-            WHERE id=$1;
-        `, [routineId]);
-
+      await destroyRoutineActivity(id);
+  
+      const {
+        rows: [routine],
+      } = await client.query(
+        `
+      DELETE FROM routines 
+      where id = $1
+      RETURNING *;
+      `,
+        [id]
+      );
+      return routine;
     } catch (error) {
-        throw error
+      throw error;
     }
-}
+  }
 
 async function createRoutine({creatorId, isPublic, name, goal}){
 
