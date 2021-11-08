@@ -1,9 +1,25 @@
 // require in the database adapter functions as you write them (createUser, createActivity...)
 const {
-  getUserById,getAllActivities,getActivityById,createActivity,updateActivity,getRoutineById,
-  getAllRoutines,getAllPublicRoutines,getAllRoutinesByUser,getPublicRoutinesByUser,
-  getPublicRoutinesByActivity,createRoutine,updateRoutine,destroyRoutine,createUser,getUser,
-  getRoutineActivitiesByRoutine,addActivityToRoutine,updateRoutineActivity,destroyRoutineActivity,getRoutinesWithoutActivities,
+  getUserById,
+  getAllActivities,
+  getActivityById,
+  createActivity,
+  updateActivity,
+  getRoutineById,
+  getAllRoutines,
+  getAllPublicRoutines,
+  getAllRoutinesByUser,
+  getPublicRoutinesByUser,
+  getPublicRoutinesByActivity,
+  createRoutine,updateRoutine,
+  destroyRoutine,
+  createUser,
+  getUser,
+  getRoutineActivitiesByRoutine,
+  addActivityToRoutine,
+  updateRoutineActivity,
+  destroyRoutineActivity,
+  getRoutinesWithoutActivities,
   attachActivitiesToRoutines
 } = require("./");
 const { client } = require("./client");
@@ -50,13 +66,15 @@ async function createTables() {
        name	VARCHAR(255)	UNIQUE NOT NULL,
        goal	TEXT	NOT NULL
    );
-     CREATE TABLE routine_activities(
-       id	SERIAL	PRIMARY KEY,
-       "routineId"	INTEGER	REFERENCES routines(id),
-       "activityId"	INTEGER	REFERENCES activities(id),
-       duration	INTEGER,
-       count	INTEGER
-     );
+    CREATE TABLE routine_activities (
+      id SERIAL PRIMARY KEY,
+      "routineId" INTEGER REFERENCES routines(id),
+      "activityId" INTEGER REFERENCES activities(id), 
+      duration INTEGER, 
+      count INTEGER,
+      UNIQUE("routineId", "activityId")
+    );
+
      `);
     console.log("Finished to building tables...");
   } catch (error) {

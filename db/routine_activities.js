@@ -61,7 +61,7 @@ async function destroyRoutineActivity(id) {
     } = await client.query(
       `
     DELETE FROM routine_activities
-    WHERE "id"=$1
+    WHERE id=$1
     RETURNING *;
     `,[id]
     );
@@ -70,6 +70,7 @@ async function destroyRoutineActivity(id) {
     throw error;
   }
 }
+
 async function getRoutineActivitiesByRoutine({ id }) {
   try {
   } catch (error) {
