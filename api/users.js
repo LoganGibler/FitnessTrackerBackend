@@ -12,7 +12,7 @@ const {
   requireUser,
 
 } = require("./utils")
-
+console.log("testing testing")
   // usersRouter.get("/", async (req, res, next) => {
   //   const users = await getAllUsers();
   
