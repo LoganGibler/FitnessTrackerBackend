@@ -6,6 +6,10 @@ const {
   updateRoutine,
   destroyRoutine
 } = require("../db/routines");
+const {
+  getRoutineActivitiesByRoutine,
+  addActivityToRoutine,
+} = require("../db/routine_activities");
 const { requireUser } = require("./utils");
 
 routineRouter.get("/", async (req, res, next) => {
@@ -70,5 +74,42 @@ routineRouter.delete("/:routineId", requireUser, async (req, res, next) => {
         next(error);
     }
 })
+
+routineRouter.post("/:routineId/activities", async (req, res, next) => {
+  try {
+    const { routineId } = req.params;
+    const { activityId, count, duration } = req.body;
+    const foundActivities = await getRoutineActivitiesByRoutine({
+      id: routineId,
+    });
+    const filteredActivity =
+      foundActivities &&
+      foundActivities.filter((e) => e.activityId === activityId);
+
+    if (filteredActivity && filteredActivity.length) {
+      next({
+        name: "Error",
+        message: "Routine by this id already exists",
+      });
+    } else {
+      const activity = await addActivityToRoutine({
+        routineId,
+        activityId,
+        count,
+        duration,
+      });
+      if (activity) {
+        res.send(activity);
+      } else {
+        next({
+          name: "Error",
+          message: "Unable to add activity to routine",
+        });
+      }
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = routineRouter;
