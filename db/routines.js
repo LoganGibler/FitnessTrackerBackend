@@ -167,12 +167,12 @@ try {
     `, [routineId])
 
 
-    if (!routine){
-        throw {
-            name: "routine not found",
-            message: "could not find routine with that id."
-        }
-    }
+    // if (!routine){
+    //     throw {
+    //         name: "routine not found",
+    //         message: "could not find routine with that id."
+    //     }
+    // }
     return routine
 } catch (error) {
     throw error
